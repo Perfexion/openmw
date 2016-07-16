@@ -544,6 +544,14 @@ void MWWorld::ContainerStore::restock (const ESM::InventoryList& items, const MW
             int currentCount = count(itemOrList);
             if (currentCount < std::abs(it->mCount))
                 addInitialItem(itemOrList, owner, std::abs(it->mCount) - currentCount, true);
+
+            //Modify the restock count if the current count is larger than the restock count
+            if (currentCount > std::abs(it->mCount) ) {
+                //Const_cast is the wrong way to do this, awaiting clarification on the correct approach
+                std::vector<ESM::ContItem>* list = (const_cast<std::vector<ESM::ContItem>* >(&(items.mList)));
+                int index = std::distance(items.mList.begin(),it);
+                (*list)[index].mCount = -currentCount;
+            } 
         }
     }
     flagAsModified();
